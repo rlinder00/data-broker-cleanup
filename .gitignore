@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+identifiers.json
+last_hits.json
+history/
+letters/
+.DS_Store
