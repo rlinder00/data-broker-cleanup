@@ -421,7 +421,7 @@ def cmd_monitor():
         hits = run_claude(ids)
     except Exception as e:  # noqa: BLE001 - any failure should alert, never look like a clean week
         log("scan FAILED: %s" % e)
-        notify(ids, "Privacy monitor FAILED this week - check %s" % LOG)
+        notify(ids, "Privacy check didn't run this week. Log: %s" % LOG)
         sys.exit(1)
 
     first_run = not os.path.exists(LAST_HITS)
@@ -439,13 +439,29 @@ def cmd_monitor():
     log("scan done: %d hits, %d new, %d gone since last run" % (len(hits), len(new), gone))
 
     if new:
-        head = ("Privacy monitor baseline: %d pages expose you" if first_run
-                else "Privacy monitor: %d NEW exposure(s) this week") % len(new)
-        lines = [head, ""]
-        for h in new:
-            lines.append("- %s (%s)\n  %s" % (h.get("site", ""), ", ".join(h.get("exposes", [])), h["url"]))
-        lines.append("\nOpt-out links: python3 privacy_kit.py checklist")
-        notify(ids, "\n".join(lines))
+        notify(ids, format_alert(new, first_run))
+
+
+def format_alert(new, first_run=False):
+    """Plain-language Telegram text: one bullet per site, what it shows, where."""
+    def and_join(xs):
+        return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1]
+
+    n = len(new)
+    head = ("Privacy check: you're listed on %d site%s" if first_run
+            else "Privacy check: you showed up on %d new site%s") % (n, "" if n == 1 else "s")
+    lines = [head, ""]
+    for h in new:
+        shows = [x for x in h.get("exposes", []) if x]
+        line = "\u2022 %s" % h.get("site", "").replace("www.", "")
+        if shows:
+            line += " \u2014 shows your %s" % and_join(shows)
+        lines.append(line)
+        lines.append("  %s" % re.sub(r"^https?://(www\.)?", "", h["url"]))
+        if "namesake" in (h.get("evidence") or "").lower() or "unverified" in (h.get("evidence") or "").lower():
+            lines.append("  (not confirmed - might be someone else with your name)")
+    lines += ["", "To remove: python3 privacy_kit.py checklist"]
+    return "\n".join(lines)
 
 
 def notify(ids, text):
