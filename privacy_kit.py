@@ -104,6 +104,8 @@ MONITOR_SITES = [
     "radaris.com", "nuwber.com", "clustrmaps.com", "peekyou.com", "zabasearch.com",
     "addresses.com", "411.com", "411locate.com", "publicrecordsnow.com", "neighborwho.com",
     "peoplelooker.com", "smartbackgroundchecks.com", "fastbackgroundcheck.com", "officialusa.com",
+    "idcrawl.com", "rocketreach.co", "zoominfo.com", "contactout.com", "signalhire.com",
+    "insighttimer.com", "kaggle.com", "pinterest.com", "lusha.com", "apollo.io",
 ]
 
 
@@ -359,6 +361,9 @@ HOW TO SEARCH
 2. Web-search each email, each phone (try formats 555-123-4567 and (555) 123-4567) and each street address in quotes.
 3. For each of these people-search sites, search `site:<domain> "<name>"` and, where a result looks like a profile, \
 fetch it to confirm: {sites}
+3b. Name searches miss records keyed to an email. For each email, also fetch https://thatsthem.com/email/<email> \
+directly, and fetch https://www.idcrawl.com/<first>-<last> (look for the full name + city, including in sponsored \
+"Background Check" boxes, which reveal which upstream broker still sells a report).
 4. If a fetch is blocked (Cloudflare/CAPTCHA), still report the search result if its snippet clearly matches \
 (say "unverified" in the evidence).
 
